@@ -1,5 +1,5 @@
 build:
-	zig build-exe hello.zig
+	zig build-exe lc3.zig
 
 run: build
-	./hello
+	./lc3
