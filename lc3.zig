@@ -1,7 +1,5 @@
 const std = @import("std");
 
-// TODO
-// 1. initialize all the memory space to 0
 const memory_size = 1 << 16;
 const program_start = 0x3000;
 
@@ -28,13 +26,43 @@ const VM = struct {
 
         vm.reg[@intFromEnum(Reg.PC)] = program_start;
         vm.reg[@intFromEnum(Reg.COND)] = @intFromEnum(Flags.ZRO);
-        vm.run = true;
 
         return vm;
     }
+
+    pub fn start(self: *VM) void {
+        self.run = true;
+
+        //        while (self.run) {
+        const program_counter = self.reg[@intFromEnum(Reg.PC)];
+        const instruction = self.memory[program_counter];
+
+        const op: Op = @enumFromInt(instruction >> 12);
+        switch (op) {
+            .ADD => self.op_add(instruction),
+            else => {},
+        }
+
+        self.reg[@intFromEnum(Reg.PC)] = self.reg[@intFromEnum(Reg.PC)] + 1;
+        //       }
+    }
+
+    pub fn op_add(self: *VM, program_counter: u16) void {
+        _ = self;
+        _ = program_counter;
+        std.log.info("ADD", .{});
+    }
 };
 
-pub fn main() !void {
+pub fn main() void {
     var vm = VM.init();
-    vm;
+
+    vm.memory[program_start] = 0x1240;
+    vm.memory[program_start + 1] = 0;
+
+    std.log.info("PC: {}", .{vm.reg[@intFromEnum(Reg.PC)]});
+    vm.start();
+
+    std.log.info("PC: {}", .{vm.reg[@intFromEnum(Reg.PC)]});
+    vm.start();
 }
